@@ -66,7 +66,7 @@
         }
 
         #job-name { 
-            font-size: 36px; 
+            font-size: 32px; 
             font-weight: 900; 
             color: #2c3e50; 
             margin-top: 15px; 
@@ -74,7 +74,7 @@
         
         /* 룰렛 텍스트 박스 */
         #roulette-box {
-            font-size: 65px;
+            font-size: 40px;
             font-weight: 900;
             color: #2c3e50;
             width: 300%;
@@ -82,12 +82,12 @@
             white-space: nowrap;
         }
         
-        /* 물음표가 일정한 간격으로 배치되고 무한으로 좌측 이동하는 클래스 (회전 속도 4초 -> 2초로 단축) */
+        /* 직업 이름들이 일정한 간격으로 나열되어 좌측으로 빠르게 회전하는 클래스 (속도 1.2초로 상향) */
         .rotating-question {
             display: flex;
             width: 100%;
-            gap: 60px; 
-            animation: infiniteLoop 2s linear infinite;
+            gap: 80px; 
+            animation: infiniteLoop 1.2s linear infinite;
         }
         
         .btn-group { 
@@ -176,7 +176,7 @@
             to { opacity: 1; transform: scale(1); } 
         }
 
-        /* 부드러운 무한 루프 키프레임 (속도 조절 반영) */
+        /* 무한 루프 키프레임 */
         @keyframes infiniteLoop {
             0% {
                 transform: translateX(0);
@@ -197,10 +197,8 @@
         <img id="job-img" src="" alt="직업 이미지" onerror="this.src='https://ssl.nexon.com/s2/game/maplestory/renewal/common/bg_default.png'">
         
         <div id="roulette-box">
-            <div class="rotating-question">
-                <span>?</span><span>?</span><span>?</span><span>?</span><span>?</span><span>?</span><span>?</span><span>?</span><span>?</span><span>?</span><span>?</span>
-                <span>?</span><span>?</span><span>?</span><span>?</span><span>?</span><span>?</span><span>?</span><span>?</span><span>?</span><span>?</span><span>?</span>
-            </div>
+            <div class="rotating-question" id="rotating-text">
+                </div>
         </div>
         
         <div id="job-name">준비되셨나요?</div>
@@ -238,6 +236,20 @@
     const countDisplay = document.getElementById('count-num');
     const logList = document.getElementById('log-list');
     const rouletteBox = document.getElementById('roulette-box');
+    const rotatingText = document.getElementById('rotating-text');
+
+    // 룰렛용 텍스트 자동 채우기
+    function initRoulette() {
+        let html = '';
+        // 직업 이름들을 두 번 반복하여 끊김 없는 효과 생성
+        for (let i = 0; i < 2; i++) {
+            jobList.forEach(job => {
+                html += `<span>${job}</span>`;
+            });
+        }
+        rotatingText.innerHTML = html;
+    }
+    initRoulette();
 
     function toggleSpin() {
         if (jobs.length === 0) return;
@@ -257,8 +269,7 @@
                 img.src = `static/${job}.jpg`; // .png면 변경하세요
             });
 
-            const rotatingDiv = document.querySelector('.rotating-question');
-            rotatingDiv.classList.add('rotating-question');
+            rotatingText.classList.add('rotating-question');
 
         } else {
             stopSpin();
@@ -270,6 +281,7 @@
         actionBtn.innerText = "시작";
         actionBtn.classList.remove('stop');
         
+        rotatingText.classList.remove('rotating-question');
         rouletteBox.style.display = "none";
         
         const finalIdx = Math.floor(Math.random() * jobs.length);
