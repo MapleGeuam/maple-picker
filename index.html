@@ -48,9 +48,9 @@
             height: 280px; 
             display: flex; 
             flex-direction: column; 
-            justify-content: space-between; 
+            justify-content: center; /* 처음에는 중앙에 텍스트만 보이도록 설정 */
             align-items: center; 
-            padding: 25px 0 35px 0; /* 내부 하단 여백 추가로 룰렛 영역 아래로 이동 */
+            padding: 25px 0 35px 0; 
             border: 2px dashed #eee; 
             border-radius: 20px; 
             margin-bottom: 20px; 
@@ -78,17 +78,16 @@
         
         /* 룰렛 텍스트 박스 */
         #roulette-box {
-            font-size: 24px; 
+            font-size: 18px; 
             font-weight: bold;
             color: #2c3e50;
             width: 100%; 
-            /* 룰렛 텍스트가 박스 내에서 약간 더 아래로 정렬되도록 조정 */
-            margin-top: 25px; 
-            display: flex;
+            display: none; /* 처음 접속 시에는 룰렛 박스를 숨김 */
             justify-content: center; 
             align-items: center; 
             overflow: hidden; 
             white-space: nowrap;
+            margin-top: 25px;
         }
         
         .rotating-question {
@@ -270,12 +269,13 @@
             isSpinning = true;
             actionBtn.innerText = "중지!";
             actionBtn.className = "stop"; 
+            
             jobImgDisplay.style.display = "none";
             
+            // 룰렛이 시작될 때 문구 숨김 처리
+            rouletteBox.style.display = "flex";
             jobNameDisplay.innerText = "룰렛이 돌아갑니다...";
             jobNameDisplay.style.display = "block";
-            
-            rouletteBox.style.display = "flex";
 
             jobs.forEach(job => {
                 const img = new Image();
