@@ -23,42 +23,44 @@
         
         .container { 
             background: white; 
-            padding: 30px; 
+            padding: 20px; /* 모바일 패딩 축소 */
             border-radius: 25px; 
             box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
             text-align: center; 
-            width: 420px; 
+            width: 90%; /* 고정 너비 대신 90% 비율로 변경하여 모바일 화면 자동 맞춤 */
+            max-width: 420px; /* 최대 너비 제한 */
+            box-sizing: border-box;
         }
         
         h1 { 
             color: var(--main-color); 
             margin: 0 0 5px 0; 
-            font-size: 26px; 
+            font-size: 24px; 
         }
         
         #counter { 
             color: #aaa; 
-            font-size: 14px; 
-            margin-bottom: 20px; 
+            font-size: 13px; 
+            margin-bottom: 15px; 
         }
         
         #display-box { 
-            height: 320px; 
+            height: 280px; /* 높이 약간 축소하여 모바일 뷰 최적화 */
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
             border: 2px dashed #eee; 
             border-radius: 20px; 
-            margin-bottom: 25px; 
+            margin-bottom: 20px; 
             background: #fffcf5; 
-            overflow: hidden; 
+            overflow: hidden; /* 영역 밖으로 나가는 텍스트 숨김 */
             position: relative;
         }
         
         #job-img {
-            width: 200px; 
-            height: 200px; 
+            width: 180px; 
+            height: 180px; 
             object-fit: contain; 
             display: none; 
             filter: drop-shadow(0 8px 12px rgba(0,0,0,0.1)); 
@@ -66,7 +68,7 @@
         }
 
         #job-name { 
-            font-size: 32px; 
+            font-size: 28px; /* 모바일 화면에 맞게 글자 크기 조정 */
             font-weight: 900; 
             color: #2c3e50; 
             margin-top: 15px; 
@@ -74,10 +76,10 @@
         
         /* 룰렛 텍스트 박스 */
         #roulette-box {
-            font-size: 20px;
+            font-size: 16px; /* 모바일 화면에 맞춰 폰트 축소 */
             font-weight: bold;
             color: #2c3e50;
-            width: 800%;
+            width: 1200%; /* 너비를 넉넉하게 확장 */
             display: flex;
             white-space: nowrap;
         }
@@ -85,19 +87,19 @@
         .rotating-question {
             display: flex;
             width: 100%;
-            gap: 35px; 
-            animation: infiniteLoop 2s linear infinite;
+            gap: 25px; /* 모바일에 맞게 간격 축소 */
+            animation: infiniteLoop 8s linear infinite;
         }
         
         .btn-group { 
             display: flex; 
-            gap: 12px; 
-            margin-top: 15px;
+            gap: 10px; 
+            margin-top: 10px;
         }
         
         button { 
-            padding: 15px; 
-            font-size: 18px; 
+            padding: 12px; 
+            font-size: 16px; 
             font-weight: bold; 
             cursor: pointer; 
             border: none; 
@@ -138,24 +140,24 @@
         }
 
         #log-container { 
-            margin-top: 25px; 
+            margin-top: 15px; 
             text-align: left; 
             border-top: 2px solid #f5f5f5; 
-            padding-top: 15px; 
+            padding-top: 10px; 
         }
         
         #log-title { 
             font-weight: bold; 
-            font-size: 14px; 
+            font-size: 13px; 
             color: #333; 
-            margin-bottom: 8px; 
+            margin-bottom: 6px; 
             display: block; 
         }
         
         #log-list { 
-            max-height: 120px; 
+            max-height: 100px; 
             overflow-y: auto; 
-            font-size: 14px; 
+            font-size: 13px; 
             color: #777; 
             list-style: none; 
             padding: 0; 
@@ -163,7 +165,7 @@
         }
         
         #log-list li { 
-            padding: 6px 10px; 
+            padding: 4px 8px; 
             border-bottom: 1px solid #fafafa; 
             display: flex; 
             justify-content: space-between; 
@@ -295,12 +297,10 @@
         li.innerHTML = `<span><strong>${47 - jobs.length}.</strong> ${picked}</span> <small>${time}</small>`;
         logList.prepend(li);
 
-        // 47개를 모두 뽑았을 때만 완료 처리
         if (jobs.length === 0) {
             actionBtn.disabled = true;
             actionBtn.innerText = "완료";
             
-            // 이미지 숨기고 텍스트만 출력되도록 처리
             jobImgDisplay.style.display = "none";
             jobNameDisplay.innerText = "모든 직업 완료!";
         }
