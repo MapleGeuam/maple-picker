@@ -74,20 +74,19 @@
         
         /* 룰렛 텍스트 박스 */
         #roulette-box {
-            font-size: 20px; /* 모든 글자가 겹치지 않고 잘 보이도록 폰트 크기 축소 */
+            font-size: 20px;
             font-weight: bold;
             color: #2c3e50;
-            width: 800%; /* 너비를 800%로 늘려 47개 전체가 한 줄로 길게 이어지도록 확보 */
+            width: 800%;
             display: flex;
             white-space: nowrap;
         }
         
-        /* 47개가 모두 나열되어 회전하도록 적용 */
         .rotating-question {
             display: flex;
             width: 100%;
-            gap: 35px; /* 겹치지 않도록 간격 설정 */
-            animation: infiniteLoop 2s linear infinite; /* 속도를 늘려 47개가 천천히 빠짐없이 지나가도록 설정 */
+            gap: 35px; 
+            animation: infiniteLoop 2s linear infinite;
         }
         
         .btn-group { 
@@ -176,7 +175,6 @@
             to { opacity: 1; transform: scale(1); } 
         }
 
-        /* 전체가 길게 나열된 만큼 이동 거리 조정 */
         @keyframes infiniteLoop {
             0% {
                 transform: translateX(0);
@@ -197,8 +195,7 @@
         <img id="job-img" src="" alt="직업 이미지" onerror="this.src='https://ssl.nexon.com/s2/game/maplestory/renewal/common/bg_default.png'">
         
         <div id="roulette-box">
-            <div class="rotating-question" id="rotating-text">
-                </div>
+            <div class="rotating-question" id="rotating-text"></div>
         </div>
         
         <div id="job-name">준비되셨나요?</div>
@@ -238,12 +235,10 @@
     const rouletteBox = document.getElementById('roulette-box');
     const rotatingText = document.getElementById('rotating-text');
 
-    // 47개 전체 채우기
     function initRoulette() {
         let html = '';
-        // 47개 전체 목록을 2번 반복하여 끊김 없는 루프 생성
         for (let i = 0; i < 2; i++) {
-            jobs.forEach(job => {
+            jobList.forEach(job => {
                 html += `<span>${job}</span>`;
             });
         }
@@ -263,10 +258,9 @@
             rouletteBox.style.display = "flex";
             jobNameDisplay.innerText = ""; 
 
-            // 이미지 프리로딩
             jobs.forEach(job => {
                 const img = new Image();
-                img.src = `static/${job}.jpg`; // .png면 변경하세요
+                img.src = `img/${job}.png`;
             });
 
             rotatingText.classList.add('rotating-question');
@@ -287,7 +281,7 @@
         const finalIdx = Math.floor(Math.random() * jobs.length);
         const picked = jobs.splice(finalIdx, 1)[0];
         
-        jobImgDisplay.src = `static/${picked}.jpg`; // .png면 변경하세요
+        jobImgDisplay.src = `img/${picked}.png`;
         jobImgDisplay.style.display = "block";
         jobNameDisplay.innerText = picked;
         
@@ -301,9 +295,13 @@
         li.innerHTML = `<span><strong>${47 - jobs.length}.</strong> ${picked}</span> <small>${time}</small>`;
         logList.prepend(li);
 
+        // 47개를 모두 뽑았을 때만 완료 처리
         if (jobs.length === 0) {
             actionBtn.disabled = true;
             actionBtn.innerText = "완료";
+            
+            // 이미지 숨기고 텍스트만 출력되도록 처리
+            jobImgDisplay.style.display = "none";
             jobNameDisplay.innerText = "모든 직업 완료!";
         }
     }
