@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메이플 직업 뽑기 (로컬 모드)</title>
+    <style>
+        :root { --main-color: #f39c12; --stop-color: #e74c3c; --bg-color: #f5f6fa; }
+        body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; width: 420px; }
+        #display-box { height: 320px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #eee; border-radius: 20px; margin-bottom: 25px; background: #fffcf5; overflow: hidden; }
+        #job-img { width: 220px; height: 220px; object-fit: contain; display: none; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.1)); }
+        #job-name { font-size: 32px; font-weight: 900; color: #2c3e50; margin-top: 15px; }
+        .btn-group { display: flex; gap: 12px; }
+        button { padding: 15px; font-size: 18px; font-weight: bold; cursor: pointer; border: none; border-radius: 12px; flex: 1; }
+        #action-btn { background: var(--main-color); color: white; }
+        #action-btn.stop { background: var(--stop-color); }
+        #log-list { max-height: 150px; overflow-y: auto; font-size: 14px; color: #777; list-style: none; padding: 0; margin-top: 20px; border-top: 1px solid #eee; }
+        #log-list li { padding: 8px 10px; border-bottom: 1px solid #fafafa; display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 style="color:#f39c12;">Maple Job Picker</h1>
+    <div id="counter" style="color:#aaa; font-size:14px; margin-bottom:20px;">남은 직업: <span id="count-num">47</span> / 47</div>
+    <div id="display-box">
+        <img id="job-img" src="" alt="">
+        <div id="job-name">준비 완료!</div>
+    </div>
+    <div class="btn-group">
+        <button id="action-btn" onclick="toggleSpin()">시작</button>
+        <button onclick="location.reload()" style="background:#dcdde1; color:#7f8c8d; flex:0.4;">리셋</button>
+    </div>
+    <ul id="log-list"></ul>
+</div>
+
+<script>
+    const jobData = [
+        "히어로", "팔라딘", "다크나이트", "불독", "썬콜", "비숍", "보우마스터", "신궁", "패스파인더", "나이트로드", "섀도어", "듀얼블레이드", "바이퍼", "캡틴", "캐논슈터",
+        "소울마스터", "플레임위자드", "윈드브레이커", "나이트워커", "스트라이커", "미하일",
+        "블래스터", "배틀메이지", "와일드헌터", "메카닉", "데몬슬레이어", "데몬어벤져", "제논",
+        "아란", "에반", "루미너스", "메르세데스", "팬텀", "은월",
+        "카이저", "카인", "카데나", "엔젤릭버스터",
+        "아델", "일리움", "칼리", "아크",
+        "호영", "라라",
+        "제로", "키네시스", "렌" // '린'에서 '렌'으로 수정 완료
+    ];
+
+    let jobs = [...jobData];
+    let isSpinning = false;
+    let spinInterval;
+
+    function toggleSpin() {
+        if (jobs.length === 0) return;
+        const btn = document.getElementById('action-btn');
+        const img = document.getElementById('job-img');
+        const nameText = document.getElementById('job-name');
+
+        if (!isSpinning) {
+            isSpinning = true;
+            btn.innerText = "중지!";
+            btn.classList.add('stop');
+            img.style.display = "none";
+            spinInterval = setInterval(() => {
+                nameText.innerText = jobs[Math.floor(Math.random() * jobs.length)];
+            }, 50);
+        } else {
+            isSpinning = false;
+            clearInterval(spinInterval);
+            btn.innerText = "시작";
+            btn.classList.remove('stop');
+            
+            const finalIdx = Math.floor(Math.random() * jobs.length);
+            const picked = jobs.splice(finalIdx, 1)[0];
+            
+            img.src = `img/${picked}.png`; // 로컬 img 폴더 참조
+            img.style.display = "block";
+            nameText.innerText = picked;
+            
+            document.getElementById('count-num').innerText = jobs.length;
+            const li = document.createElement('li');
+            li.innerHTML = `<span><strong>${47 - jobs.length}.</strong> ${picked}</span> <small>${new Date().toLocaleTimeString()}</small>`;
+            document.getElementById('log-list').prepend(li);
+        }
+    }
+</script>
+</body>
+</html>
