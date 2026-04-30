@@ -23,12 +23,12 @@
         
         .container { 
             background: white; 
-            padding: 20px; /* 모바일 패딩 축소 */
+            padding: 20px; 
             border-radius: 25px; 
             box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
             text-align: center; 
-            width: 90%; /* 고정 너비 대신 90% 비율로 변경하여 모바일 화면 자동 맞춤 */
-            max-width: 420px; /* 최대 너비 제한 */
+            width: 90%; 
+            max-width: 420px; 
             box-sizing: border-box;
         }
         
@@ -45,22 +45,24 @@
         }
         
         #display-box { 
-            height: 280px; /* 높이 약간 축소하여 모바일 뷰 최적화 */
+            height: 280px; 
             display: flex; 
             flex-direction: column; 
+            justify-content: space-between; 
             align-items: center; 
-            justify-content: center; 
+            padding: 25px 0 35px 0; /* 내부 하단 여백 추가로 룰렛 영역 아래로 이동 */
             border: 2px dashed #eee; 
             border-radius: 20px; 
             margin-bottom: 20px; 
             background: #fffcf5; 
-            overflow: hidden; /* 영역 밖으로 나가는 텍스트 숨김 */
+            overflow: hidden; 
             position: relative;
+            box-sizing: border-box;
         }
         
         #job-img {
-            width: 180px; 
-            height: 180px; 
+            width: 140px; 
+            height: 140px; 
             object-fit: contain; 
             display: none; 
             filter: drop-shadow(0 8px 12px rgba(0,0,0,0.1)); 
@@ -68,27 +70,33 @@
         }
 
         #job-name { 
-            font-size: 28px; /* 모바일 화면에 맞게 글자 크기 조정 */
+            font-size: 28px; 
             font-weight: 900; 
             color: #2c3e50; 
-            margin-top: 15px; 
+            margin-bottom: 5px; 
         }
         
         /* 룰렛 텍스트 박스 */
         #roulette-box {
-            font-size: 16px; /* 모바일 화면에 맞춰 폰트 축소 */
+            font-size: 24px; 
             font-weight: bold;
             color: #2c3e50;
-            width: 1200%; /* 너비를 넉넉하게 확장 */
+            width: 100%; 
+            /* 룰렛 텍스트가 박스 내에서 약간 더 아래로 정렬되도록 조정 */
+            margin-top: 25px; 
             display: flex;
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden; 
             white-space: nowrap;
         }
         
         .rotating-question {
             display: flex;
-            width: 100%;
-            gap: 25px; /* 모바일에 맞게 간격 축소 */
-            animation: infiniteLoop 8s linear infinite;
+            justify-content: center;
+            align-items: center;
+            gap: 35px; 
+            animation: infiniteLoop 3s linear infinite;
         }
         
         .btn-group { 
@@ -123,6 +131,11 @@
             background: var(--stop-color); 
             box-shadow: 0 4px 0 #c0392b; 
         }
+
+        #action-btn.confirm {
+            background: #3498db; 
+            box-shadow: 0 4px 0 #2980b9; 
+        }
         
         #reset-btn { 
             background: #dcdde1; 
@@ -150,7 +163,7 @@
             font-weight: bold; 
             font-size: 13px; 
             color: #333; 
-            margin-bottom: 6px; 
+            margin-bottom: 8px; 
             display: block; 
         }
         
@@ -194,11 +207,11 @@
     <div id="counter">남은 직업: <span id="count-num">47</span> / 47</div>
     
     <div id="display-box">
-        <img id="job-img" src="" alt="직업 이미지" onerror="this.src='https://ssl.nexon.com/s2/game/maplestory/renewal/common/bg_default.png'">
-        
         <div id="roulette-box">
             <div class="rotating-question" id="rotating-text"></div>
         </div>
+        
+        <img id="job-img" src="" alt="직업 이미지" onerror="this.src='img/물음표.png'">
         
         <div id="job-name">준비되셨나요?</div>
     </div>
@@ -228,6 +241,8 @@
 
     let jobs = [...jobList];
     let isSpinning = false;
+    let isConfirming = false; 
+    let pickedJob = ""; 
 
     const actionBtn = document.getElementById('action-btn');
     const jobNameDisplay = document.getElementById('job-name');
@@ -251,14 +266,16 @@
     function toggleSpin() {
         if (jobs.length === 0) return;
 
-        if (!isSpinning) {
+        if (!isSpinning && !isConfirming) {
             isSpinning = true;
             actionBtn.innerText = "중지!";
-            actionBtn.classList.add('stop');
+            actionBtn.className = "stop"; 
             jobImgDisplay.style.display = "none";
             
+            jobNameDisplay.innerText = "룰렛이 돌아갑니다...";
+            jobNameDisplay.style.display = "block";
+            
             rouletteBox.style.display = "flex";
-            jobNameDisplay.innerText = ""; 
 
             jobs.forEach(job => {
                 const img = new Image();
@@ -267,27 +284,39 @@
 
             rotatingText.classList.add('rotating-question');
 
-        } else {
-            stopSpin();
-        }
-    }
+        } else if (isSpinning) {
+            isSpinning = false;
+            isConfirming = true;
+            
+            actionBtn.innerText = "확인";
+            actionBtn.className = "confirm";
+            
+            rotatingText.classList.remove('rotating-question');
+            rouletteBox.style.display = "none";
+            
+            const finalIdx = Math.floor(Math.random() * jobs.length);
+            pickedJob = jobs.splice(finalIdx, 1)[0];
+            
+            jobImgDisplay.src = "img/물음표.png";
+            jobImgDisplay.style.display = "block";
+            
+            jobNameDisplay.innerText = ""; 
 
-    function stopSpin() {
-        isSpinning = false;
-        actionBtn.innerText = "시작";
-        actionBtn.classList.remove('stop');
-        
-        rotatingText.classList.remove('rotating-question');
-        rouletteBox.style.display = "none";
-        
-        const finalIdx = Math.floor(Math.random() * jobs.length);
-        const picked = jobs.splice(finalIdx, 1)[0];
-        
-        jobImgDisplay.src = `img/${picked}.png`;
-        jobImgDisplay.style.display = "block";
-        jobNameDisplay.innerText = picked;
-        
-        updateUI(picked);
+        } else if (isConfirming) {
+            isConfirming = false;
+
+            jobImgDisplay.src = `img/${pickedJob}.png`;
+            jobImgDisplay.style.display = "block";
+            
+            jobNameDisplay.innerText = pickedJob;
+            jobNameDisplay.style.display = "block";
+            
+            updateUI(pickedJob);
+            pickedJob = "";
+
+            actionBtn.innerText = "시작";
+            actionBtn.className = "";
+        }
     }
 
     function updateUI(picked) {
