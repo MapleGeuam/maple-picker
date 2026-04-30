@@ -74,20 +74,20 @@
         
         /* 룰렛 텍스트 박스 */
         #roulette-box {
-            font-size: 40px;
+            font-size: 38px;
             font-weight: 900;
             color: #2c3e50;
-            width: 300%;
+            width: 400%;
             display: flex;
             white-space: nowrap;
         }
         
-        /* 직업 이름들이 일정한 간격으로 나열되어 좌측으로 빠르게 회전하는 클래스 (속도 1.2초로 상향) */
+        /* 47개가 모두 나열되어 회전하도록 적용 (속도 0.8초 적용) */
         .rotating-question {
             display: flex;
             width: 100%;
-            gap: 80px; 
-            animation: infiniteLoop 1.2s linear infinite;
+            gap: 65px; 
+            animation: infiniteLoop 0.8s linear infinite; /* 0.2초의 체감 속도와 유사하게 회전 */
         }
         
         .btn-group { 
@@ -176,7 +176,7 @@
             to { opacity: 1; transform: scale(1); } 
         }
 
-        /* 무한 루프 키프레임 */
+        /* 47개가 길게 늘어진 만큼의 비율을 고려하여 이동 */
         @keyframes infiniteLoop {
             0% {
                 transform: translateX(0);
@@ -238,12 +238,12 @@
     const rouletteBox = document.getElementById('roulette-box');
     const rotatingText = document.getElementById('rotating-text');
 
-    // 룰렛용 텍스트 자동 채우기
+    // 47개 전체 채우기
     function initRoulette() {
         let html = '';
-        // 직업 이름들을 두 번 반복하여 끊김 없는 효과 생성
+        // 47개 전체 목록을 2번 반복하여 끊김 없는 루프 생성
         for (let i = 0; i < 2; i++) {
-            jobList.forEach(job => {
+            jobs.forEach(job => {
                 html += `<span>${job}</span>`;
             });
         }
