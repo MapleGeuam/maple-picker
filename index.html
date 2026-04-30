@@ -74,20 +74,20 @@
         
         /* 룰렛 텍스트 박스 */
         #roulette-box {
-            font-size: 38px;
-            font-weight: 900;
+            font-size: 20px; /* 모든 글자가 겹치지 않고 잘 보이도록 폰트 크기 축소 */
+            font-weight: bold;
             color: #2c3e50;
-            width: 400%;
+            width: 800%; /* 너비를 800%로 늘려 47개 전체가 한 줄로 길게 이어지도록 확보 */
             display: flex;
             white-space: nowrap;
         }
         
-        /* 47개가 모두 나열되어 회전하도록 적용 (속도 0.8초 적용) */
+        /* 47개가 모두 나열되어 회전하도록 적용 */
         .rotating-question {
             display: flex;
             width: 100%;
-            gap: 65px; 
-            animation: infiniteLoop 0.8s linear infinite; /* 0.2초의 체감 속도와 유사하게 회전 */
+            gap: 35px; /* 겹치지 않도록 간격 설정 */
+            animation: infiniteLoop 8s linear infinite; /* 속도를 늘려 47개가 천천히 빠짐없이 지나가도록 설정 */
         }
         
         .btn-group { 
@@ -176,7 +176,7 @@
             to { opacity: 1; transform: scale(1); } 
         }
 
-        /* 47개가 길게 늘어진 만큼의 비율을 고려하여 이동 */
+        /* 전체가 길게 나열된 만큼 이동 거리 조정 */
         @keyframes infiniteLoop {
             0% {
                 transform: translateX(0);
