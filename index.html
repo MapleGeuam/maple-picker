@@ -1,346 +1,413 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>메이플 직업 무작위 뽑기 Pro</title>
     <style>
-        :root { 
-            --main-color: #f39c12; 
-            --stop-color: #e74c3c; 
-            --bg-color: #f5f6fa; 
+        :root {
+            --main-color: #f39c12;
+            --stop-color: #e74c3c;
+            --bg-color: #f5f6fa;
         }
-        
-        body { 
-            font-family: 'Pretendard', -apple-system, sans-serif; 
-            background-color: var(--bg-color); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            margin: 0; 
+
+        body {
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
         }
-        
-        .container { 
-            background: white; 
-            padding: 20px; 
-            border-radius: 25px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
-            text-align: center; 
-            width: 90%; 
-            max-width: 420px; 
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 420px;
             box-sizing: border-box;
         }
-        
-        h1 { 
-            color: var(--main-color); 
-            margin: 0 0 5px 0; 
-            font-size: 24px; 
+
+        h1 {
+            color: var(--main-color);
+            margin: 0 0 5px 0;
+            font-size: 24px;
         }
-        
-        #counter { 
-            color: #aaa; 
-            font-size: 13px; 
-            margin-bottom: 15px; 
+
+        #counter {
+            color: #aaa;
+            font-size: 13px;
+            margin-bottom: 15px;
         }
-        
-        #display-box { 
-            height: 280px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; /* 처음에는 중앙에 텍스트만 보이도록 설정 */
-            align-items: center; 
-            padding: 25px 0 35px 0; 
-            border: 2px dashed #eee; 
-            border-radius: 20px; 
-            margin-bottom: 20px; 
-            background: #fffcf5; 
-            overflow: hidden; 
+
+        #display-box {
+            height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 25px 0 35px 0;
+            border: 2px dashed #eee;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            background: #fffcf5;
+            overflow: hidden;
             position: relative;
             box-sizing: border-box;
         }
-        
+
         #job-img {
-            width: 140px; 
-            height: 140px; 
-            object-fit: contain; 
-            display: none; 
-            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.1)); 
+            width: 140px;
+            height: 140px;
+            object-fit: contain;
+            display: none;
+            filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.1));
             animation: fadeIn 0.3s ease-out;
         }
 
-        #job-name { 
-            font-size: 28px; 
-            font-weight: 900; 
-            color: #2c3e50; 
-            margin-bottom: 5px; 
+        #job-name {
+            font-size: 28px;
+            font-weight: 900;
+            color: #2c3e50;
+            margin-bottom: 5px;
         }
-        
+
         /* 룰렛 텍스트 박스 */
         #roulette-box {
-            font-size: 18px; 
+            font-size: 18px;
             font-weight: bold;
             color: #2c3e50;
-            width: 100%; 
-            display: none; /* 처음 접속 시에는 룰렛 박스를 숨김 */
-            justify-content: center; 
-            align-items: center; 
-            overflow: hidden; 
+            width: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
             white-space: nowrap;
             margin-top: 25px;
         }
-        
+
         .rotating-question {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 35px; 
+            gap: 35px;
             animation: infiniteLoop 3s linear infinite;
         }
-        
-        .btn-group { 
-            display: flex; 
-            gap: 10px; 
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
             margin-top: 10px;
         }
-        
-        button { 
-            padding: 12px; 
-            font-size: 16px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            border: none; 
-            border-radius: 12px; 
-            transition: 0.2s; 
-            flex: 1; 
+
+        button {
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 12px;
+            transition: 0.2s;
+            flex: 1;
         }
-        
-        #action-btn { 
-            background: var(--main-color); 
-            color: white; 
-            box-shadow: 0 4px 0 #d68910; 
+
+        #action-btn {
+            background: var(--main-color);
+            color: white;
+            box-shadow: 0 4px 0 #d68910;
         }
-        
-        #action-btn:active { 
-            transform: translateY(2px); 
-            box-shadow: 0 2px 0 #d68910; 
+
+        #action-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #d68910;
         }
-        
-        #action-btn.stop { 
-            background: var(--stop-color); 
-            box-shadow: 0 4px 0 #c0392b; 
+
+        #action-btn.stop {
+            background: var(--stop-color);
+            box-shadow: 0 4px 0 #c0392b;
         }
 
         #action-btn.confirm {
-            background: #3498db; 
-            box-shadow: 0 4px 0 #2980b9; 
-        }
-        
-        #reset-btn { 
-            background: #dcdde1; 
-            color: #7f8c8d; 
-            flex: 0.4; 
-        }
-        
-        button:hover { 
-            opacity: 0.9; 
-            transform: translateY(-2px); 
-        }
-        
-        button:active { 
-            transform: translateY(0); 
+            background: #3498db;
+            box-shadow: 0 4px 0 #2980b9;
         }
 
-        #log-container { 
-            margin-top: 15px; 
-            text-align: left; 
-            border-top: 2px solid #f5f5f5; 
-            padding-top: 10px; 
-        }
-        
-        #log-title { 
-            font-weight: bold; 
-            font-size: 13px; 
-            color: #333; 
-            margin-bottom: 8px; 
-            display: block; 
-        }
-        
-        #log-list { 
-            max-height: 100px; 
-            overflow-y: auto; 
-            font-size: 13px; 
-            color: #777; 
-            list-style: none; 
-            padding: 0; 
-            margin: 0; 
-        }
-        
-        #log-list li { 
-            padding: 4px 8px; 
-            border-bottom: 1px solid #fafafa; 
-            display: flex; 
-            justify-content: space-between; 
-            animation: slideIn 0.3s ease-out; 
+        #reset-btn {
+            background: #dcdde1;
+            color: #7f8c8d;
+            flex: 0.4;
         }
 
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: scale(0.95); } 
-            to { opacity: 1; transform: scale(1); } 
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #log-container {
+            margin-top: 15px;
+            text-align: left;
+            border-top: 2px solid #f5f5f5;
+            padding-top: 10px;
+        }
+
+        #log-title {
+            font-weight: bold;
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        #log-list {
+            max-height: 100px;
+            overflow-y: auto;
+            font-size: 13px;
+            color: #777;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #log-list li {
+            padding: 4px 8px;
+            border-bottom: 1px solid #fafafa;
+            display: flex;
+            justify-content: space-between;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         @keyframes infiniteLoop {
             0% {
                 transform: translateX(0);
             }
+
             100% {
                 transform: translateX(-50%);
             }
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <h1>챌린저스 서버 직업 룰렛</h1>
-    <div id="counter">남은 직업: <span id="count-num">47</span> / 47</div>
-    
-    <div id="display-box">
-        <div id="roulette-box">
-            <div class="rotating-question" id="rotating-text"></div>
+    <div class="container">
+        <h1>챌린저스 서버 직업 룰렛</h1>
+        <div id="counter">남은 직업: <span id="count-num">47</span> / 47</div>
+
+        <div id="display-box">
+            <div id="roulette-box">
+                <div class="rotating-question" id="rotating-text"></div>
+            </div>
+
+            <img id="job-img" src="" alt="직업 이미지" onerror="this.src='img/물음표.png'">
+
+            <div id="job-name">준비되셨나요?</div>
         </div>
-        
-        <img id="job-img" src="" alt="직업 이미지" onerror="this.src='img/물음표.png'">
-        
-        <div id="job-name">준비되셨나요?</div>
+
+        <div class="btn-group">
+            <button id="action-btn" onclick="toggleSpin()">시작</button>
+            <button id="reset-btn" onclick="resetAll()">리셋</button>
+        </div>
+
+        <div id="log-container">
+            <span id="log-title">뽑힌 기록:</span>
+            <ul id="log-list"></ul>
+        </div>
     </div>
 
-    <div class="btn-group">
-        <button id="action-btn" onclick="toggleSpin()">시작</button>
-        <button id="reset-btn" onclick="resetAll()">리셋</button>
-    </div>
+    <script>
+        const jobList = [
+            "히어로", "팔라딘", "다크나이트", "불독", "썬콜", "비숍", "보우마스터", "신궁", "패스파인더", "나이트로드", "섀도어", "듀얼블레이드", "바이퍼", "캡틴", "캐논슈터",
+            "소울마스터", "플레임위자드", "윈드브레이커", "나이트워커", "스트라이커", "미하일",
+            "블래스터", "배틀메이지", "와일드헌터", "메카닉", "데몬슬레이어", "데몬어벤져", "제논",
+            "아란", "에반", "루미너스", "메르세데스", "팬텀", "은월",
+            "카이저", "카인", "카데나", "엔젤릭버스터",
+            "아델", "일리움", "칼리", "아크",
+            "호영", "라라",
+            "제로", "키네시스", "렌"
+        ];
 
-    <div id="log-container">
-        <span id="log-title">뽑힌 기록:</span>
-        <ul id="log-list"></ul>
-    </div>
-</div>
+        let jobs = [...jobList];
+        let isSpinning = false;
+        let isConfirming = false;
+        let pickedJob = "";
+        let soundInterval = null;
 
-<script>
-    const jobList = [
-        "히어로", "팔라딘", "다크나이트", "불독", "썬콜", "비숍", "보우마스터", "신궁", "패스파인더", "나이트로드", "섀도어", "듀얼블레이드", "바이퍼", "캡틴", "캐논슈터",
-        "소울마스터", "플레임위자드", "윈드브레이커", "나이트워커", "스트라이커", "미하일",
-        "블래스터", "배틀메이지", "와일드헌터", "메카닉", "데몬슬레이어", "데몬어벤져", "제논",
-        "아란", "에반", "루미너스", "메르세데스", "팬텀", "은월",
-        "카이저", "카인", "카데나", "엔젤릭버스터",
-        "아델", "일리움", "칼리", "아크",
-        "호영", "라라",
-        "제로", "키네시스", "렌"
-    ];
+        const actionBtn = document.getElementById('action-btn');
+        const jobNameDisplay = document.getElementById('job-name');
+        const jobImgDisplay = document.getElementById('job-img');
+        const countDisplay = document.getElementById('count-num');
+        const logList = document.getElementById('log-list');
+        const rouletteBox = document.getElementById('roulette-box');
+        const rotatingText = document.getElementById('rotating-text');
 
-    let jobs = [...jobList];
-    let isSpinning = false;
-    let isConfirming = false; 
-    let pickedJob = ""; 
+        // 웹 오디오 API를 활용한 자체 효과음 제네레이터
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    const actionBtn = document.getElementById('action-btn');
-    const jobNameDisplay = document.getElementById('job-name');
-    const jobImgDisplay = document.getElementById('job-img');
-    const countDisplay = document.getElementById('count-num');
-    const logList = document.getElementById('log-list');
-    const rouletteBox = document.getElementById('roulette-box');
-    const rotatingText = document.getElementById('rotating-text');
+        function playSound(freq, type, duration, volume = 0.1) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
 
-    function initRoulette() {
-        let html = '';
-        for (let i = 0; i < 2; i++) {
-            jobList.forEach(job => {
-                html += `<span>${job}</span>`;
-            });
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.log("오디오 재생 오류:", e);
+            }
         }
-        rotatingText.innerHTML = html;
-    }
-    initRoulette();
 
-    function toggleSpin() {
-        if (jobs.length === 0) return;
-
-        if (!isSpinning && !isConfirming) {
-            isSpinning = true;
-            actionBtn.innerText = "중지!";
-            actionBtn.className = "stop"; 
-            
-            jobImgDisplay.style.display = "none";
-            
-            // 룰렛이 시작될 때 문구 숨김 처리
-            rouletteBox.style.display = "flex";
-            jobNameDisplay.innerText = "룰렛이 돌아갑니다...";
-            jobNameDisplay.style.display = "block";
-
-            jobs.forEach(job => {
-                const img = new Image();
-                img.src = `img/${job}.png`;
-            });
-
-            rotatingText.classList.add('rotating-question');
-
-        } else if (isSpinning) {
-            isSpinning = false;
-            isConfirming = true;
-            
-            actionBtn.innerText = "확인";
-            actionBtn.className = "confirm";
-            
-            rotatingText.classList.remove('rotating-question');
-            rouletteBox.style.display = "none";
-            
-            const finalIdx = Math.floor(Math.random() * jobs.length);
-            pickedJob = jobs.splice(finalIdx, 1)[0];
-            
-            jobImgDisplay.src = "img/물음표.png";
-            jobImgDisplay.style.display = "block";
-            
-            jobNameDisplay.innerText = ""; 
-
-        } else if (isConfirming) {
-            isConfirming = false;
-
-            jobImgDisplay.src = `img/${pickedJob}.png`;
-            jobImgDisplay.style.display = "block";
-            
-            jobNameDisplay.innerText = pickedJob;
-            jobNameDisplay.style.display = "block";
-            
-            updateUI(pickedJob);
-            pickedJob = "";
-
-            actionBtn.innerText = "시작";
-            actionBtn.className = "";
+        // 1. 회전할 때 나는 '도로록' 소리
+        function startSpinSound() {
+            soundInterval = setInterval(() => {
+                playSound(150 + Math.random() * 80, 'sine', 0.05, 0.08);
+            }, 120);
         }
-    }
 
-    function updateUI(picked) {
-        countDisplay.innerText = jobs.length;
-        const li = document.createElement('li');
-        const time = new Date().toLocaleTimeString('ko-KR', { hour12: false });
-        li.innerHTML = `<span><strong>${47 - jobs.length}.</strong> ${picked}</span> <small>${time}</small>`;
-        logList.prepend(li);
-
-        if (jobs.length === 0) {
-            actionBtn.disabled = true;
-            actionBtn.innerText = "완료";
-            
-            jobImgDisplay.style.display = "none";
-            jobNameDisplay.innerText = "모든 직업 완료!";
+        function stopSpinSound() {
+            clearInterval(soundInterval);
         }
-    }
 
-    function resetAll() {
-        if(confirm("모든 기록을 리셋하고 처음부터 다시 시작할까요?")) {
-            location.reload();
+        // 2. 확인 준비 단계에서 나는 웅장한 효과음
+        function playReadySound() {
+            playSound(220, 'triangle', 0.4, 0.15);
+            setTimeout(() => playSound(330, 'triangle', 0.4, 0.15), 100);
         }
-    }
-</script>
+
+        // 3. 직업 공개 순간의 팡파르 소리
+        function playFanfareSound() {
+            playSound(523.25, 'sine', 0.15, 0.1); // 도 (C5)
+            setTimeout(() => playSound(659.25, 'sine', 0.15, 0.1), 100); // 미 (E5)
+            setTimeout(() => playSound(783.99, 'sine', 0.15, 0.1), 200); // 솔 (G5)
+            setTimeout(() => playSound(1046.50, 'sine', 0.5, 0.15), 300); // 높은 도 (C6)
+        }
+
+        function initRoulette() {
+            let html = '';
+            for (let i = 0; i < 2; i++) {
+                jobList.forEach(job => {
+                    html += `<span>${job}</span>`;
+                });
+            }
+            rotatingText.innerHTML = html;
+        }
+        initRoulette();
+
+        function toggleSpin() {
+            if (jobs.length === 0) return;
+
+            if (!isSpinning && !isConfirming) {
+                isSpinning = true;
+                actionBtn.innerText = "중지!";
+                actionBtn.className = "stop";
+
+                jobImgDisplay.style.display = "none";
+
+                rouletteBox.style.display = "flex";
+                jobNameDisplay.innerText = "룰렛이 돌아갑니다...";
+                jobNameDisplay.style.display = "block";
+
+                jobs.forEach(job => {
+                    const img = new Image();
+                    img.src = `img/${job}.png`;
+                });
+
+                rotatingText.classList.add('rotating-question');
+                startSpinSound(); // 회전 소리 시작
+
+            } else if (isSpinning) {
+                isSpinning = false;
+                isConfirming = true;
+
+                actionBtn.innerText = "확인";
+                actionBtn.className = "confirm";
+
+                rotatingText.classList.remove('rotating-question');
+                rouletteBox.style.display = "none";
+                stopSpinSound(); // 회전 소리 중지
+                playReadySound(); // 준비 완료 띵- 소리
+
+                const finalIdx = Math.floor(Math.random() * jobs.length);
+                pickedJob = jobs.splice(finalIdx, 1)[0];
+
+                jobImgDisplay.src = "img/물음표.png";
+                jobImgDisplay.style.display = "block";
+
+                jobNameDisplay.innerText = "";
+
+            } else if (isConfirming) {
+                isConfirming = false;
+
+                jobImgDisplay.src = `img/${pickedJob}.png`;
+                jobImgDisplay.style.display = "block";
+
+                jobNameDisplay.innerText = pickedJob;
+                jobNameDisplay.style.display = "block";
+
+                playFanfareSound(); // 팡파르 소리 재생
+                updateUI(pickedJob);
+                pickedJob = "";
+
+                actionBtn.innerText = "시작";
+                actionBtn.className = "";
+            }
+        }
+
+        function updateUI(picked) {
+            countDisplay.innerText = jobs.length;
+            const li = document.createElement('li');
+            const time = new Date().toLocaleTimeString('ko-KR', { hour12: false });
+            li.innerHTML = `<span><strong>${47 - jobs.length}.</strong> ${picked}</span> <small>${time}</small>`;
+            logList.prepend(li);
+
+            if (jobs.length === 0) {
+                actionBtn.disabled = true;
+                actionBtn.innerText = "완료";
+
+                jobImgDisplay.style.display = "none";
+                jobNameDisplay.innerText = "모든 직업 완료!";
+            }
+        }
+
+        function resetAll() {
+            if (confirm("모든 기록을 리셋하고 처음부터 다시 시작할까요?")) {
+                location.reload();
+            }
+        }
+    </script>
 
 </body>
+
 </html>
