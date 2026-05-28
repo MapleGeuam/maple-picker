@@ -6,24 +6,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>메이플 직업 무작위 뽑기 Pro</title>
     <style>
+        /* 기본(라이트) 테마 변수 */
         :root {
             --main-color: #f39c12;
             --stop-color: #e74c3c;
             --bg-color: #f5f6fa;
+            --box-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-muted: #aaa;
+            --display-bg: #fffcf5;
+            --border-color: #eee;
+            --log-border: #f5f5f5;
+        }
+
+        /* 다크 모드 테마 변수 */
+        body.dark-mode {
+            --bg-color: #1e1e24;
+            --box-bg: #2b2b36;
+            --text-color: #e0e0e0;
+            --text-muted: #888;
+            --display-bg: #22222a;
+            --border-color: #444;
+            --log-border: #3c3c4a;
         }
 
         body {
             font-family: 'Pretendard', -apple-system, sans-serif;
             background-color: var(--bg-color);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .container {
-            background: white;
+            background: var(--box-bg);
             padding: 20px;
             border-radius: 25px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
@@ -31,6 +51,22 @@
             width: 90%;
             max-width: 420px;
             box-sizing: border-box;
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+
+        /* 다크모드 토글 버튼 */
+        #theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            box-shadow: none;
+            color: var(--text-color);
         }
 
         h1 {
@@ -40,7 +76,7 @@
         }
 
         #counter {
-            color: #aaa;
+            color: var(--text-muted);
             font-size: 13px;
             margin-bottom: 15px;
         }
@@ -52,13 +88,14 @@
             justify-content: center;
             align-items: center;
             padding: 25px 0 35px 0;
-            border: 2px dashed #eee;
+            border: 2px dashed var(--border-color);
             border-radius: 20px;
             margin-bottom: 20px;
-            background: #fffcf5;
+            background: var(--display-bg);
             overflow: hidden;
             position: relative;
             box-sizing: border-box;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         #job-img {
@@ -73,7 +110,6 @@
         #job-name {
             font-size: 28px;
             font-weight: 900;
-            color: #2c3e50;
             margin-bottom: 5px;
         }
 
@@ -81,22 +117,24 @@
         #roulette-box {
             font-size: 18px;
             font-weight: bold;
-            color: #2c3e50;
             width: 100%;
             display: none;
-            justify-content: center;
-            align-items: center;
             overflow: hidden;
             white-space: nowrap;
             margin-top: 25px;
+            position: relative;
         }
 
         .rotating-question {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 35px;
-            animation: infiniteLoop 3s linear infinite;
+            display: inline-block;
+            white-space: nowrap;
+            /* 애니메이션 최적화 */
+            animation: infiniteLoop 5s linear infinite; 
+        }
+
+        .rotating-question span {
+            display: inline-block;
+            padding: 0 15px;
         }
 
         .btn-group {
@@ -141,6 +179,7 @@
             background: #dcdde1;
             color: #7f8c8d;
             flex: 0.4;
+            box-shadow: 0 4px 0 #bdc3c7;
         }
 
         button:hover {
@@ -155,14 +194,13 @@
         #log-container {
             margin-top: 15px;
             text-align: left;
-            border-top: 2px solid #f5f5f5;
+            border-top: 2px solid var(--log-border);
             padding-top: 10px;
         }
 
         #log-title {
             font-weight: bold;
             font-size: 13px;
-            color: #333;
             margin-bottom: 8px;
             display: block;
         }
@@ -171,7 +209,7 @@
             max-height: 100px;
             overflow-y: auto;
             font-size: 13px;
-            color: #777;
+            color: var(--text-muted);
             list-style: none;
             padding: 0;
             margin: 0;
@@ -179,32 +217,26 @@
 
         #log-list li {
             padding: 4px 8px;
-            border-bottom: 1px solid #fafafa;
+            border-bottom: 1px solid var(--log-border);
             display: flex;
             justify-content: space-between;
             animation: slideIn 0.3s ease-out;
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        @keyframes infiniteLoop {
-            0% {
-                transform: translateX(0);
-            }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-            100% {
-                transform: translateX(-50%);
-            }
+        /* 텍스트 롤링 애니메이션 수정 */
+        @keyframes infiniteLoop {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); } 
         }
     </style>
 </head>
@@ -212,6 +244,7 @@
 <body>
 
     <div class="container">
+        <button id="theme-toggle" onclick="toggleTheme()">🌙</button>
         <h1>챌린저스 서버 직업 룰렛</h1>
         <div id="counter">남은 직업: <span id="count-num">47</span> / 47</div>
 
@@ -220,7 +253,7 @@
                 <div class="rotating-question" id="rotating-text"></div>
             </div>
 
-            <img id="job-img" src="" alt="직업 이미지" onerror="this.src='img/물음표.png'">
+            <img id="job-img" src="" alt="직업 이미지" onerror="this.onerror=null; this.src='img/물음표.png'">
 
             <div id="job-name">준비되셨나요?</div>
         </div>
@@ -237,7 +270,7 @@
     </div>
 
     <script>
-        const jobList = [
+        const originalJobList = [
             "히어로", "팔라딘", "다크나이트", "불독", "썬콜", "비숍", "보우마스터", "신궁", "패스파인더", "나이트로드", "섀도어", "듀얼블레이드", "바이퍼", "캡틴", "캐논슈터",
             "소울마스터", "플레임위자드", "윈드브레이커", "나이트워커", "스트라이커", "미하일",
             "블래스터", "배틀메이지", "와일드헌터", "메카닉", "데몬슬레이어", "데몬어벤져", "제논",
@@ -245,10 +278,11 @@
             "카이저", "카인", "카데나", "엔젤릭버스터",
             "아델", "일리움", "칼리", "아크",
             "호영", "라라",
-            "제로", "키네시스", "렌"
+            "제로", "키네시스", "린" /* 렌 -> 린 오타 수정 */
         ];
 
-        let jobs = [...jobList];
+        let jobs = [];
+        let pickedHistory = [];
         let isSpinning = false;
         let isConfirming = false;
         let pickedJob = "";
@@ -261,8 +295,61 @@
         const logList = document.getElementById('log-list');
         const rouletteBox = document.getElementById('roulette-box');
         const rotatingText = document.getElementById('rotating-text');
+        const themeToggleBtn = document.getElementById('theme-toggle');
 
-        // 웹 오디오 API를 활용한 자체 효과음 제네레이터
+        // --- 초기화 및 로컬 스토리지 로드 ---
+        function initialize() {
+            // 다크모드 로드
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggleBtn.innerText = '☀️';
+            }
+
+            // 데이터 로드
+            const savedJobs = localStorage.getItem('mapleJobs');
+            const savedHistory = localStorage.getItem('mapleHistory');
+
+            if (savedJobs && savedHistory) {
+                jobs = JSON.parse(savedJobs);
+                pickedHistory = JSON.parse(savedHistory);
+                renderHistory();
+            } else {
+                jobs = [...originalJobList];
+            }
+            
+            countDisplay.innerText = jobs.length;
+            if (jobs.length === 0) {
+                setCompleteState();
+            }
+
+            // 이미지 프리로딩 (시작 버튼 누를 때 렉 방지)
+            preloadImages();
+            initRoulette();
+        }
+
+        // --- 다크모드 토글 ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+                themeToggleBtn.innerText = '☀️';
+            } else {
+                localStorage.setItem('theme', 'light');
+                themeToggleBtn.innerText = '🌙';
+            }
+        }
+
+        // --- 이미지 미리 로드 ---
+        function preloadImages() {
+            originalJobList.forEach(job => {
+                const img = new Image();
+                img.src = `img/${job}.png`;
+            });
+            const defaultImg = new Image();
+            defaultImg.src = 'img/물음표.png';
+        }
+
+        // --- 사운드 제네레이터 ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         function playSound(freq, type, duration, volume = 0.1) {
@@ -289,85 +376,76 @@
             }
         }
 
-        // 1. 회전할 때 나는 '도로록' 소리
         function startSpinSound() {
             soundInterval = setInterval(() => {
                 playSound(150 + Math.random() * 80, 'sine', 0.05, 0.08);
-            }, 120);
+            }, 60);
         }
 
         function stopSpinSound() {
             clearInterval(soundInterval);
         }
 
-        // 2. 확인 준비 단계에서 나는 웅장한 효과음
         function playReadySound() {
             playSound(220, 'triangle', 0.4, 0.15);
             setTimeout(() => playSound(330, 'triangle', 0.4, 0.15), 100);
         }
 
-        // 3. 직업 공개 순간의 팡파르 소리
         function playFanfareSound() {
-            playSound(523.25, 'sine', 0.15, 0.1); // 도 (C5)
-            setTimeout(() => playSound(659.25, 'sine', 0.15, 0.1), 100); // 미 (E5)
-            setTimeout(() => playSound(783.99, 'sine', 0.15, 0.1), 200); // 솔 (G5)
-            setTimeout(() => playSound(1046.50, 'sine', 0.5, 0.15), 300); // 높은 도 (C6)
+            playSound(523.25, 'sine', 0.15, 0.1);
+            setTimeout(() => playSound(659.25, 'sine', 0.15, 0.1), 100);
+            setTimeout(() => playSound(783.99, 'sine', 0.15, 0.1), 200);
+            setTimeout(() => playSound(1046.50, 'sine', 0.5, 0.15), 300);
         }
 
+        // --- 룰렛 텍스트 초기화 (끊김 방지를 위해 2배수 복사) ---
         function initRoulette() {
             let html = '';
-            for (let i = 0; i < 2; i++) {
-                jobList.forEach(job => {
-                    html += `<span>${job}</span>`;
-                });
-            }
-            rotatingText.innerHTML = html;
+            originalJobList.forEach(job => {
+                html += `<span>${job}</span>`;
+            });
+            // 정확히 2번 반복하여 translateX(-50%) 시 부드럽게 이어지도록 처리
+            rotatingText.innerHTML = html + html; 
         }
-        initRoulette();
 
+        // --- 핵심 구동 로직 ---
         function toggleSpin() {
             if (jobs.length === 0) return;
 
             if (!isSpinning && !isConfirming) {
+                // 1단계: 회전 시작
                 isSpinning = true;
                 actionBtn.innerText = "중지!";
                 actionBtn.className = "stop";
 
                 jobImgDisplay.style.display = "none";
-
-                rouletteBox.style.display = "flex";
+                rouletteBox.style.display = "block";
                 jobNameDisplay.innerText = "룰렛이 돌아갑니다...";
                 jobNameDisplay.style.display = "block";
 
-                jobs.forEach(job => {
-                    const img = new Image();
-                    img.src = `img/${job}.png`;
-                });
-
-                rotatingText.classList.add('rotating-question');
-                startSpinSound(); // 회전 소리 시작
+                startSpinSound(); 
 
             } else if (isSpinning) {
+                // 2단계: 결과 대기 (확인 버튼)
                 isSpinning = false;
                 isConfirming = true;
 
                 actionBtn.innerText = "확인";
                 actionBtn.className = "confirm";
 
-                rotatingText.classList.remove('rotating-question');
                 rouletteBox.style.display = "none";
-                stopSpinSound(); // 회전 소리 중지
-                playReadySound(); // 준비 완료 띵- 소리
+                stopSpinSound(); 
+                playReadySound(); 
 
                 const finalIdx = Math.floor(Math.random() * jobs.length);
                 pickedJob = jobs.splice(finalIdx, 1)[0];
 
                 jobImgDisplay.src = "img/물음표.png";
                 jobImgDisplay.style.display = "block";
-
                 jobNameDisplay.innerText = "";
 
             } else if (isConfirming) {
+                // 3단계: 결과 공개
                 isConfirming = false;
 
                 jobImgDisplay.src = `img/${pickedJob}.png`;
@@ -376,8 +454,8 @@
                 jobNameDisplay.innerText = pickedJob;
                 jobNameDisplay.style.display = "block";
 
-                playFanfareSound(); // 팡파르 소리 재생
-                updateUI(pickedJob);
+                playFanfareSound(); 
+                saveAndRender(pickedJob);
                 pickedJob = "";
 
                 actionBtn.innerText = "시작";
@@ -385,29 +463,54 @@
             }
         }
 
-        function updateUI(picked) {
-            countDisplay.innerText = jobs.length;
-            const li = document.createElement('li');
+        // --- 기록 저장 및 UI 업데이트 ---
+        function saveAndRender(picked) {
             const time = new Date().toLocaleTimeString('ko-KR', { hour12: false });
-            li.innerHTML = `<span><strong>${47 - jobs.length}.</strong> ${picked}</span> <small>${time}</small>`;
-            logList.prepend(li);
+            pickedHistory.unshift({ name: picked, time: time }); // 최신 기록을 맨 앞에 추가
+            
+            // 로컬 스토리지에 데이터 저장
+            localStorage.setItem('mapleJobs', JSON.stringify(jobs));
+            localStorage.setItem('mapleHistory', JSON.stringify(pickedHistory));
+
+            countDisplay.innerText = jobs.length;
+            renderHistory();
 
             if (jobs.length === 0) {
-                actionBtn.disabled = true;
-                actionBtn.innerText = "완료";
-
-                jobImgDisplay.style.display = "none";
-                jobNameDisplay.innerText = "모든 직업 완료!";
+                setCompleteState();
             }
         }
 
+        function renderHistory() {
+            logList.innerHTML = '';
+            const total = originalJobList.length;
+            pickedHistory.forEach((log, index) => {
+                const li = document.createElement('li');
+                // 히스토리가 역순으로 쌓이므로 순서 번호 계산
+                const orderNum = total - (jobs.length + index); 
+                li.innerHTML = `<span><strong>${orderNum}.</strong> ${log.name}</span> <small>${log.time}</small>`;
+                logList.appendChild(li);
+            });
+        }
+
+        function setCompleteState() {
+            actionBtn.disabled = true;
+            actionBtn.innerText = "완료";
+            jobImgDisplay.style.display = "none";
+            jobNameDisplay.innerText = "모든 직업 완료!";
+        }
+
+        // --- 리셋 로직 ---
         function resetAll() {
-            if (confirm("모든 기록을 리셋하고 처음부터 다시 시작할까요?")) {
+            if (confirm("모든 기록을 리셋하고 처음부터 다시 시작할까요? (테마 설정은 유지됩니다)")) {
+                localStorage.removeItem('mapleJobs');
+                localStorage.removeItem('mapleHistory');
                 location.reload();
             }
         }
-    </script>
 
+        // 앱 시작
+        window.onload = initialize;
+    </script>
 </body>
 
 </html>
