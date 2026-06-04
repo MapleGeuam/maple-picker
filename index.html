@@ -3,8 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>메이플 직업 무작위 뽑기 Pro</title>
+
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="직업 룰렛">
+    <link rel="apple-touch-icon" href="img/물음표.png">
+
     <style>
         /* 기본(라이트) 테마 변수 */
         :root {
@@ -40,6 +48,8 @@
             min-height: 100vh;
             margin: 0;
             transition: background-color 0.3s ease, color 0.3s ease;
+            /* 아이폰 터치 시 파란 하이라이트 박스 제거 */
+            -webkit-tap-highlight-color: transparent;
         }
 
         .container {
@@ -128,8 +138,7 @@
         .rotating-question {
             display: inline-block;
             white-space: nowrap;
-            /* 애니메이션 최적화 - will-change 추가 */
-            animation: infiniteLoop 5s linear infinite; 
+            animation: infiniteLoop 5s linear infinite;
             will-change: transform;
         }
 
@@ -225,19 +234,38 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* 텍스트 롤링 애니메이션 수정 */
         @keyframes infiniteLoop {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); } 
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
         }
     </style>
 </head>
@@ -279,7 +307,7 @@
             "카이저", "카인", "카데나", "엔젤릭버스터",
             "아델", "일리움", "칼리", "아크",
             "호영", "라라",
-            "제로", "키네시스", "린" /* 렌 -> 린 오타 수정 */
+            "제로", "키네시스", "린"
         ];
 
         let jobs = [];
@@ -298,15 +326,12 @@
         const rotatingText = document.getElementById('rotating-text');
         const themeToggleBtn = document.getElementById('theme-toggle');
 
-        // --- 초기화 및 로컬 스토리지 로드 ---
         function initialize() {
-            // 다크모드 로드
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');
                 themeToggleBtn.innerText = '☀️';
             }
 
-            // 데이터 로드
             const savedJobs = localStorage.getItem('mapleJobs');
             const savedHistory = localStorage.getItem('mapleHistory');
 
@@ -317,18 +342,16 @@
             } else {
                 jobs = [...originalJobList];
             }
-            
+
             countDisplay.innerText = jobs.length;
             if (jobs.length === 0) {
                 setCompleteState();
             }
 
-            // 이미지 프리로딩 (시작 버튼 누를 때 렉 방지)
             preloadImages();
             initRoulette();
         }
 
-        // --- 다크모드 토글 ---
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             if (document.body.classList.contains('dark-mode')) {
@@ -340,7 +363,6 @@
             }
         }
 
-        // --- 이미지 미리 로드 ---
         function preloadImages() {
             originalJobList.forEach(job => {
                 const img = new Image();
@@ -350,11 +372,9 @@
             defaultImg.src = 'img/물음표.png';
         }
 
-        // --- 사운드 제네레이터 (Web Audio API 정책 대응) ---
         let audioCtx;
 
         function playSound(freq, type, duration, volume = 0.1) {
-            // 사용자 액션이 있을 때 오디오 컨텍스트 최초 생성
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
@@ -404,22 +424,18 @@
             setTimeout(() => playSound(1046.50, 'sine', 0.5, 0.15), 300);
         }
 
-        // --- 룰렛 텍스트 초기화 (끊김 방지를 위해 2배수 복사) ---
         function initRoulette() {
             let html = '';
             originalJobList.forEach(job => {
                 html += `<span>${job}</span>`;
             });
-            // 정확히 2번 반복하여 translateX(-50%) 시 부드럽게 이어지도록 처리
-            rotatingText.innerHTML = html + html; 
+            rotatingText.innerHTML = html + html;
         }
 
-        // --- 핵심 구동 로직 ---
         function toggleSpin() {
             if (jobs.length === 0) return;
 
             if (!isSpinning && !isConfirming) {
-                // 1단계: 회전 시작
                 isSpinning = true;
                 actionBtn.innerText = "중지!";
                 actionBtn.className = "stop";
@@ -429,10 +445,9 @@
                 jobNameDisplay.innerText = "룰렛이 돌아갑니다...";
                 jobNameDisplay.style.display = "block";
 
-                startSpinSound(); 
+                startSpinSound();
 
             } else if (isSpinning) {
-                // 2단계: 결과 대기 (확인 버튼)
                 isSpinning = false;
                 isConfirming = true;
 
@@ -440,8 +455,8 @@
                 actionBtn.className = "confirm";
 
                 rouletteBox.style.display = "none";
-                stopSpinSound(); 
-                playReadySound(); 
+                stopSpinSound();
+                playReadySound();
 
                 const finalIdx = Math.floor(Math.random() * jobs.length);
                 pickedJob = jobs.splice(finalIdx, 1)[0];
@@ -451,23 +466,19 @@
                 jobNameDisplay.innerText = "";
 
             } else if (isConfirming) {
-                // 3단계: 결과 공개
                 isConfirming = false;
 
                 jobImgDisplay.src = `img/${pickedJob}.png`;
-                
-                // 이미지 로드 실패 시 무한루프 방지 및 대체 이미지 적용
-                jobImgDisplay.onerror = function() {
-                    this.onerror = null; 
+                jobImgDisplay.onerror = function () {
+                    this.onerror = null;
                     this.src = 'img/물음표.png';
                 };
-                
                 jobImgDisplay.style.display = "block";
 
                 jobNameDisplay.innerText = pickedJob;
                 jobNameDisplay.style.display = "block";
 
-                playFanfareSound(); 
+                playFanfareSound();
                 saveAndRender(pickedJob);
                 pickedJob = "";
 
@@ -476,12 +487,10 @@
             }
         }
 
-        // --- 기록 저장 및 UI 업데이트 ---
         function saveAndRender(picked) {
             const time = new Date().toLocaleTimeString('ko-KR', { hour12: false });
-            pickedHistory.unshift({ name: picked, time: time }); // 최신 기록을 맨 앞에 추가
-            
-            // 로컬 스토리지에 데이터 저장
+            pickedHistory.unshift({ name: picked, time: time });
+
             localStorage.setItem('mapleJobs', JSON.stringify(jobs));
             localStorage.setItem('mapleHistory', JSON.stringify(pickedHistory));
 
@@ -493,20 +502,19 @@
             }
         }
 
-        // --- 보안 및 성능을 개선한 DOM 조작 ---
         function renderHistory() {
             logList.innerHTML = '';
             const total = originalJobList.length;
             pickedHistory.forEach((log, index) => {
                 const li = document.createElement('li');
-                const orderNum = total - (jobs.length + index); 
-                
+                const orderNum = total - (jobs.length + index);
+
                 const span = document.createElement('span');
-                span.innerHTML = `<strong>${orderNum}.</strong> ${log.name}`; 
-                
+                span.innerHTML = `<strong>${orderNum}.</strong> ${log.name}`;
+
                 const small = document.createElement('small');
-                small.textContent = log.time; 
-                
+                small.textContent = log.time;
+
                 li.appendChild(span);
                 li.appendChild(small);
                 logList.appendChild(li);
@@ -520,7 +528,6 @@
             jobNameDisplay.innerText = "모든 직업 완료!";
         }
 
-        // --- 리셋 로직 ---
         function resetAll() {
             if (confirm("모든 기록을 리셋하고 처음부터 다시 시작할까요? (테마 설정은 유지됩니다)")) {
                 localStorage.removeItem('mapleJobs');
@@ -529,7 +536,6 @@
             }
         }
 
-        // 앱 시작
         window.onload = initialize;
     </script>
 </body>
